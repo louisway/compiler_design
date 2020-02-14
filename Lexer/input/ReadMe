@@ -1,0 +1,7 @@
+multi_symbol includes the first 18 multi-symbol, except ID,NUM,REAL
+special rule: 
+1. &  
+2. =
+3. >
+4. <
+5. !
