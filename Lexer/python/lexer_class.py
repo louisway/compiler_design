@@ -29,7 +29,11 @@ class Lexer:
             self.StopSymb = set(line)
         Stop_file.close()                
         self.ConSymb = self.StopSymb - self.SingleSymb
-
+        Invalid_file = open("../input/invalid_single.txt","r")
+        for line in Invalid_file:
+            line = line.strip().split("\t")
+            self.InSymb = set(line)
+        Invalid_file.close()
     def type_check(self,input,type_record):
         if type_record["alpha"] == 0:
             if type_record["dot"] == 0:
@@ -63,9 +67,12 @@ class Lexer:
         if self.str[self.cur_pos] in self.StopSymb:
             #if the char belong to consymb: & = > < | !, tell if str[cur_pos,cur_pos+1] in consymb
             if self.cur_pos+1 < self.str_len and self.str[self.cur_pos:self.cur_pos+2] in self.MulSymb:
-                self.cur_token = Token(self.str[self.cur_pos:self.cur_pos+1],self.MulSymb[self.str[self.cur_pos:self.cur_pos+2]])
+                self.cur_token = Token(self.str[self.cur_pos:self.cur_pos+2],self.MulSymb[self.str[self.cur_pos:self.cur_pos+2]])
                 self.cur_pos += 2
-                 
+            #single character in stopsymb, but a pair of characters not in MulSymb, and the single in the diff set, then it is an "error" 
+            elif self.str[self.cur_pos] in self.InSymb:
+                self.cur_token = Token(self.str[self.cur_pos],"Error")
+                self.cur_pos += 1 
             #or a real stopsymb: if it's not a consymb, then it's a real stopsymb
             else:
                 self.cur_token = Token(self.str[self.cur_pos],self.str[self.cur_pos])
@@ -84,7 +91,6 @@ class Lexer:
                 if self.str[pos].isdigit():
                     type_record["number"] += 1
                 pos += 1 
-           
             self.cur_token = Token(self.str[self.cur_pos:pos],self.type_check(self.str[self.cur_pos:pos],type_record)) 
             self.cur_pos = pos
         return self.cur_token 
